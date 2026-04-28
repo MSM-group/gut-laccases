@@ -1,10 +1,10 @@
 rm(list = ls())
 
-# Load the required libraries
+# Load required packages
 library(pacman)
 pacman::p_load("readxl", "ggplot2", "ggpubr")
 
-# Import experimental data from Excel table as a tibble
+# Import experimental data from excel table as a tibble
 data <- read_excel("data/fig4a.xlsx") %>%
   dplyr::mutate(Time = as.factor(Time) %>%
                   forcats::fct_relevel("60", "10"),
@@ -25,4 +25,6 @@ plot <- ggplot(data, aes(x = Enzyme, y = Abs, fill = Time)) +
   scale_fill_discrete(palette = c("black", "grey")) +
   theme(text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 8))
+
+#Export bar plot as .jpg file
 ggplot2::ggsave("plots/fig4a.jpg", device = "jpeg", units = "in", height = 3.5, width = 3)
