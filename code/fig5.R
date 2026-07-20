@@ -41,7 +41,7 @@ laccase_biotransformation_plot <- ggplot2::ggplot(dat, aes(x = mean, y = compoun
   scale_fill_discrete(palette = pal,
                       breaks = c("MCO1 w/ ABTS", "MCO1 w/o ABTS", "aMCO w/ ABTS", "aMCO w/o ABTS", "mMCO w/ ABTS", "mMCO w/o ABTS", "Vei1 w/ ABTS", "Vei1 w/o ABTS", "Abiotic control w/ ABTS"),
                       guide = guide_legend(reverse = TRUE)) +
-  labs(y = "Compound", x = expression(C/C[0])) +
+  labs(y = "Compound", x = "% removal") +
   theme(legend.text = element_text(size = 8, margin = margin(l = 1.5, unit = "pt")),
         legend.title = element_blank(),
         axis.title.x = element_text(size = 8),
