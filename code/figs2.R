@@ -4,24 +4,24 @@ rm(list = ls())
 library(pacman)
 pacman::p_load("tidyverse", "ggpubr")
 
-#Import MAG quality data
-busco_results <- readr::read_tsv("data/figs2.tsv") %>%
-  dplyr::mutate(quality = dplyr::case_when(completeness > 90 & contamination < 5 ~ "high",
-                                           completeness >= 50 & contamination < 10 ~ "medium",
-                                           TRUE ~ "low"))
+#Import metadata as tibble
+metadat <- readr::read_csv("data/metadata_independent_samples.csv")
 
-#Summarize MAG quality
-summary_stats <- busco_results %>%
-  dplyr::group_by(quality) %>%
-  dplyr::summarize(count = n())
+#Import rpoB abundance data as tibble
+dat <- metadat %>%
+  dplyr::left_join(readr::read_csv("data/figs2.csv"), by = c("ID" = "sample_id")) %>%
+  tidyr::drop_na() %>%
+  dplyr::mutate(rpoB_abundance_plus_one = rpoB_abundance + 1)
 
-#Create completeness/contamination plot
-mags_quality_plot <- ggplot2::ggplot(busco_results, aes(x = completeness, y = contamination)) +
-  geom_point(alpha = 0.3) +
+#Create plot
+ggplot2::ggplot(data = dat, aes(x = URCA, y = rpoB_abundance_plus_one)) +
+  ggplot2::geom_point(alpha = 0.3) +
+  ggplot2::geom_smooth(method = "lm", se = TRUE, color = "black") +
+  ggpmisc::stat_poly_eq(use_label(c("adj.R2", "p"))) +
   ggpubr::theme_pubr() +
-  ggplot2::theme(axis.text = element_text(size = 8),
-                 axis.title = element_text(size = 8)) +
-  ggplot2::labs(x = "Completeness", y = "Contamination")
+  ggplot2::labs(x = "URCA", y = "Abundance of contigs with rpoB [RPM] + 1") +
+  ggplot2::scale_y_log10() +
+  ggplot2::theme(text = element_text(size = 8))
 
 #Save plot as .jpg file
-ggplot2::ggsave("plots/figs2.jpg", dpi = 300, device = "jpeg", units = "in", width = 4.5, height = 4.5)
+ggplot2::ggsave("plots/figs2.jpg", dpi = 300, device = "jpeg", units = "in", width = 7, height = 4.5)
